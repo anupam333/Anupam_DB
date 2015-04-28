@@ -1,16 +1,21 @@
 class db():
 
     def __init__(self):
+        # transct is transactions for that variable
         self.setDict = {"begin": 0, 'commit': 0, 'transct': {}}
+        # This dict stores the values and variables like {value:
+        # [var1,var2....]}
         self.valVar = {}
+        # This dic stores variables and its values like
+        # {var1:val1,var2,val2.....}
         self.varOccur = {}
-        self.rollBackArr = []
+        self.rollBackArr = []  # This dict is to searilize
 
     def getTracDict(self):
         return {'value': [], 'name': ''}
 
     def setValues(self, val, name):
-        # If the value does not exists and variable as either
+        # If the value does not exists and either the variable
         if str(val) not in self.valVar.keys() and name not in self.varOccur.keys():
             self.valVar[str(val)] = [name]
             self.varOccur[name] = str(val)
@@ -44,22 +49,14 @@ class db():
             if name in self.setDict['transct'].keys():
                 # We need to remember only transaction has a 'Begin'
                 if self.setDict['begin'] == 1:
-                    # Reduce unset dict value
-                    if self.setDict['transct'][name][-1] == 'unset':
-                        pass
-
                     self.setDict['transct'][name].append(val)
                 else:
                     self.setDict['transct'][name] = [val]
             else:
                 # If no such variable exists
                 self.setDict['transct'][name] = [val]
-
-        # print "At set values:  ", self.valVar
-
         if self.setDict['begin'] == 1:  # serialize it
             self.rollBackArr.append({'set': name})
-        # print "At set values again: ", self.setDict
 
     def getValues(self, name):
         if self.setDict['begin'] == 0:
@@ -99,8 +96,6 @@ class db():
                     # this number will used to subtract from numequalto
                     # get the value of the variable
                     varVal = self.varOccur[name]
-
-                    #self.unsetCounter += 1
                     self.reduceCounter(varVal, name)
 
         else:
@@ -115,10 +110,6 @@ class db():
             del self.valVar[str(val)]
 
     def rollback(self):
-        #         print 'rollback', self.rollBackArr
-        #         print 'valVar', self.valVar
-        #         print 'setdict', self.setDict
-        #         print 'varoccur', self.varOccur
         if self.setDict['begin'] == 0:
             print "Incorrect input"
             return
@@ -142,7 +133,7 @@ class db():
         elif self.setDict['commit'] == 0:
             print "Transaction has been committed and cannot be rolled back"
 
-        # set self.valVar array again
+        # set self.valVar and self.varoccur dict again
         self.valVar = {}
         self.varOccur = {}
         for x in self.setDict['transct'].keys():
@@ -153,7 +144,6 @@ class db():
                     self.valVar[str(valArray[-1])].append(x)
                 else:
                     self.valVar[str(valArray[-1])] = [x]
-        # set varoccur array again
 
     def commit(self):
         self.setDict['commit'] = 1
@@ -210,7 +200,6 @@ def main():
                 if len(ipArr) != 1:
                     print 'Incorrect input'
                     continue
-                # DB.commit()
                 DB.setDict['begin'] = 1
                 DB.setDict['commit'] = 0
 
