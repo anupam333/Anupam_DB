@@ -158,7 +158,7 @@ class db():
                 self.setDict['transct'][name] = [finalVal]
         for name in delArray:
             del self.setDict['transct'][name]
-        self.setDict['begin'] = 0
+        self.setDict['begin'] = self.setDict['begin'] - 1  # Nesting
 
 
 def main():
@@ -200,7 +200,7 @@ def main():
                 if len(ipArr) != 1:
                     print 'Incorrect input'
                     continue
-                DB.setDict['begin'] = 1
+                DB.setDict['begin'] = +1  # Nesting logic
                 DB.setDict['commit'] = 0
 
             elif ip[:8].lower() == 'rollback':
